@@ -6,6 +6,8 @@
     <title>FYB of the Week Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Library for capturing HTML as an image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
         
@@ -24,13 +26,13 @@
         .profile-circle {
             border: 2px solid #22c55e;
             aspect-ratio: 1/1;
-            width: 140px;
-            height: 140px;
+            width: 130px; /* Slightly reduced to balance the column */
+            height: 130px;
             margin-left: 0 !important;
         }
 
         .infos div {
-            line-height: 3.1;
+            line-height: 1.8; /* Slightly tighter for better grouping */
         }
 
         .input-pill {
@@ -47,10 +49,14 @@
             background: #22c55e;
             color: white;
             border-radius: 9999px;
-            padding: 1px 8px;
+            padding: 0 10px;
             font-weight: 600;
-            font-size: clamp(0.6rem, 2vw, 0.7rem);
-            display: inline-block;
+            font-size: 0.65rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 18px;
+            line-height: 1;
         }
 
         .gradient-bar {
@@ -61,6 +67,15 @@
 
         .bar-green { background: linear-gradient(90deg, #15803d, #4ade80); }
         .bar-red { background: linear-gradient(90deg, #b91c1c, #f87171); }
+
+        .quote-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 14px;
+            line-height: 1;
+            padding: 0 8px;
+        }
 
         @media print {
             .no-print { display: none; }
@@ -104,8 +119,8 @@
                     <input type="text" id="in-hobbies" placeholder="Hobbies" class="input-pill">
                 </div>
 
-                <button onclick="window.print()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 mt-2">
-                    <i data-lucide="printer" class="w-4 h-4"></i> Export 400x500 Card
+                <button onclick="exportAsImage(event)" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 mt-2">
+                    <i data-lucide="download" class="w-4 h-4"></i> Save as PNG Image
                 </button>
             </div>
         </div>
@@ -132,21 +147,23 @@
                 </div>
                 <div class="text-right">
                     <h2 class="text-[clamp(0.6rem,3.5vw,0.85rem)] font-black text-green-900 uppercase leading-none">THE METABOLITES</h2>
-                    <div class="bg-red-500 text-white text-[5px] font-bold px-1.5 py-0.5 rounded-full inline-block">FYB OF THE WEEK</div>
+                    <div class="bg-red-500 text-white text-[5px] font-bold rounded-full inline-flex items-center justify-center px-2 h-[12px] leading-none mt-1 uppercase">FYB OF THE WEEK</div>
                 </div>
             </div>
 
             <!-- Content Grid -->
-            <div class="grid grid-cols-5 gap-2 mt-2 flex-grow overflow-hidden">
+            <!-- FIX: Added gap-2 and removed flex-grow from parent to stabilize height -->
+            <div class="grid grid-cols-5 gap-2 mt-2 overflow-hidden h-full pb-1">
                 
                 <!-- Column 1 (Personal) -->
-                <div class="col-span-2 flex flex-col justify-between h-full py-1">
-                    <div class="mx-auto profile-circle rounded-full overflow-hidden bg-white shadow-inner flex items-center justify-center">
+                <!-- FIX: Changed justify-between to justify-start and added a gap-3 -->
+                <div class="col-span-2 flex flex-col justify-start gap-3 h-full py-1">
+                    <div class="mx-auto profile-circle rounded-full overflow-hidden bg-white shadow-inner flex items-center justify-center flex-shrink-0">
                         <img id="profile-pic" src="https://via.placeholder.com/150" class="w-full h-full object-cover hidden">
                         <i id="placeholder-icon" data-lucide="user" class="w-8 h-8 text-green-200"></i>
                     </div>
 
-                    <div class="space-y-1 infos">
+                    <div class="space-y-1.5 infos">
                         <div>
                             <span class="label-pill">Name:</span>
                             <div id="out-name" class="border-b border-dotted border-green-400 text-[8px] font-bold text-green-900 uppercase truncate">NI</div>
@@ -160,65 +177,66 @@
                             <span id="out-instagram" class="text-[7px] font-bold text-green-900">NI</span>
                         </div>
                         <div class="relative pt-2">
-                            <div class="absolute top-0 left-2 bg-gradient-to-r from-red-400 to-green-400 text-white px-1.5 py-0.2 rounded-full text-[5px] font-bold z-10 uppercase">Quote</div>
-                            <div id="out-quote" class="bg-white/60 border border-green-100 p-1 rounded-lg text-[7px] italic text-gray-600 line-clamp-3 leading-tight min-h-[30px]">NI</div>
+                            <div class="absolute top-0 left-2 bg-gradient-to-r from-red-400 to-green-400 text-white rounded-full text-[5px] font-bold z-10 uppercase quote-tag">Quote</div>
+                            <div id="out-quote" class="bg-white/60 border border-green-100 p-1 rounded-lg text-[7px] italic text-gray-600 leading-tight">NI</div>
                         </div>
-                        <div class="flex justify-around items-center pt-1 opacity-20">
-                            <i data-lucide="dna" class="w-5 h-5 text-green-700"></i>
-                            <i data-lucide="flask-conical" class="w-5 h-5 text-green-700"></i>
+                        <!-- Watermarks moved here slightly to fill space naturally -->
+                        <div class="flex justify-around items-center pt-1 opacity-10">
+                            <i data-lucide="dna" class="w-4 h-4 text-green-700"></i>
+                            <i data-lucide="flask-conical" class="w-4 h-4 text-green-700"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Column 2 (Profile List) -->
-                <div class="col-span-3 flex flex-col justify-between py-1">
+                <div class="col-span-3 flex flex-col justify-between py-1 h-full">
                     <h3 class="text-green-900 font-black text-[9px] border-b border-green-800 inline-block uppercase mb-1">Profile</h3>
                     
                     <div class="space-y-1 flex-grow flex flex-col justify-between">
-                        <!-- All Requested Fields -->
+                        <!-- Items -->
                         <div class="profile-item">
                             <div class="text-[6px] font-bold text-green-800 uppercase px-1">Best Lecturer</div>
-                            <div id="out-lecturer" class="px-1 text-[8px] font-medium text-gray-700 truncate">NI</div>
+                            <div id="out-lecturer" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
                             <div class="gradient-bar bar-green"></div>
                         </div>
                         <div class="profile-item">
                             <div class="text-[6px] font-bold text-green-800 uppercase px-1">Best Level</div>
-                            <div id="out-bestlevel" class="px-1 text-[8px] font-medium text-gray-700 truncate">NI</div>
+                            <div id="out-bestlevel" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
                             <div class="gradient-bar bar-red"></div>
                         </div>
                         <div class="profile-item">
                             <div class="text-[6px] font-bold text-green-800 uppercase px-1">Worst Level</div>
-                            <div id="out-worstlevel" class="px-1 text-[8px] font-medium text-gray-700 truncate">NI</div>
+                            <div id="out-worstlevel" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
                             <div class="gradient-bar bar-green"></div>
                         </div>
                         <div class="profile-item">
                             <div class="text-[6px] font-bold text-green-800 uppercase px-1">Best Course</div>
-                            <div id="out-bestcourse" class="px-1 text-[8px] font-medium text-gray-700 truncate">NI</div>
+                            <div id="out-bestcourse" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
                             <div class="gradient-bar bar-red"></div>
                         </div>
                         <div class="profile-item">
                             <div class="text-[6px] font-bold text-green-800 uppercase px-1">Worst Course</div>
-                            <div id="out-worstcourse" class="px-1 text-[8px] font-medium text-gray-700 truncate">NI</div>
+                            <div id="out-worstcourse" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
                             <div class="gradient-bar bar-green"></div>
                         </div>
                         <div class="profile-item">
                             <div class="text-[6px] font-bold text-green-800 uppercase px-1">If Not Biochemistry</div>
-                            <div id="out-ifnot" class="px-1 text-[8px] font-medium text-gray-700 truncate">NI</div>
+                            <div id="out-ifnot" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
                             <div class="gradient-bar bar-red"></div>
                         </div>
                         <div class="profile-item">
                             <div class="text-[6px] font-bold text-green-800 uppercase px-1">Crush in Class</div>
-                            <div id="out-crush" class="px-1 text-[8px] font-medium text-gray-700 truncate">NI</div>
+                            <div id="out-crush" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
                             <div class="gradient-bar bar-green"></div>
                         </div>
                         <div class="profile-item">
                             <div class="text-[6px] font-bold text-green-800 uppercase px-1">Relationship Status</div>
-                            <div id="out-status" class="px-1 text-[8px] font-medium text-gray-700 truncate">NI</div>
+                            <div id="out-status" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
                             <div class="gradient-bar bar-red"></div>
                         </div>
                         <div class="profile-item">
                             <div class="text-[6px] font-bold text-green-800 uppercase px-1">Hobbies</div>
-                            <div id="out-hobbies" class="px-1 text-[8px] font-medium text-gray-700 truncate">NI</div>
+                            <div id="out-hobbies" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
                             <div class="gradient-bar bar-green"></div>
                         </div>
                     </div>
@@ -233,37 +251,84 @@
     </div>
 
     <script>
-        lucide.createIcons();
-
-        const inputs = [
-            'name', 'dob', 'origin', 'quote', 'lecturer', 
-            'bestlevel', 'worstlevel', 'bestcourse', 'worstcourse',
-            'ifnot', 'crush', 'status', 'hobbies', 'instagram'
-        ];
-
-        inputs.forEach(id => {
-            const inputEl = document.getElementById(`in-${id}`);
-            const outputEl = document.getElementById(`out-${id}`);
+        async function exportAsImage(event) {
+            const btn = event.currentTarget;
+            const originalHTML = btn.innerHTML;
             
-            inputEl.addEventListener('input', () => {
-                outputEl.textContent = inputEl.value || "NI";
-            });
-        });
+            try {
+                btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Processing...';
+                if (window.lucide) window.lucide.createIcons();
 
-        const imageInput = document.getElementById('imageInput');
-        const profilePic = document.getElementById('profile-pic');
-        const placeholderIcon = document.getElementById('placeholder-icon');
+                const element = document.getElementById('capture');
+                await document.fonts.ready;
+                await new Promise(resolve => setTimeout(resolve, 500));
 
-        imageInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    profilePic.src = e.target.result;
-                    profilePic.classList.remove('hidden');
-                    placeholderIcon.classList.add('hidden');
+                const canvas = await html2canvas(element, {
+                    scale: 3,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: "#ffffff",
+                    width: 400,
+                    height: 500,
+                    letterRendering: true,
+                    allowTaint: true
+                });
+
+                const link = document.createElement('a');
+                const nameValue = document.getElementById('in-name')?.value || 'FYB_Profile';
+                link.download = `${nameValue.replace(/\s+/g, '_')}_Card.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+                
+            } catch (err) {
+                console.error("Export Error:", err);
+                alert("Image export failed.");
+            } finally {
+                btn.innerHTML = originalHTML;
+                if (window.lucide) window.lucide.createIcons();
+            }
+        }
+
+        window.addEventListener('load', function() {
+            if (window.lucide) window.lucide.createIcons();
+
+            const inputs = [
+                'name', 'dob', 'origin', 'quote', 'lecturer', 
+                'bestlevel', 'worstlevel', 'bestcourse', 'worstcourse',
+                'ifnot', 'crush', 'status', 'hobbies', 'instagram'
+            ];
+
+            inputs.forEach(id => {
+                const inputEl = document.getElementById(`in-${id}`);
+                const outputEl = document.getElementById(`out-${id}`);
+                if (inputEl && outputEl) {
+                    inputEl.addEventListener('input', () => {
+                        outputEl.textContent = inputEl.value || "NI";
+                    });
                 }
-                reader.readAsDataURL(file);
+            });
+
+            const imageInput = document.getElementById('imageInput');
+            const profilePic = document.getElementById('profile-pic');
+            const placeholderIcon = document.getElementById('placeholder-icon');
+
+            if (imageInput) {
+                imageInput.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            if (profilePic) {
+                                profilePic.src = e.target.result;
+                                profilePic.classList.remove('hidden');
+                            }
+                            if (placeholderIcon) {
+                                placeholderIcon.classList.add('hidden');
+                            }
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
             }
         });
     </script>
