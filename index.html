@@ -17,235 +17,219 @@
         }
 
         .card-bg {
+            background: #ffffff;
             background: linear-gradient(135deg, #dcfce7 0%, #ffffff 50%, #dcfce7 100%);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(34, 197, 94, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(34, 197, 94, 0.05) 0%, transparent 20%);
+            position: relative;
+        }
+
+        /* Fixed dimensions for the capture area to prevent distortion */
+        #capture {
+            width: 400px;
+            height: 500px;
+            overflow: hidden;
+            background-color: white;
         }
 
         .profile-circle {
-            border: 2px solid #22c55e;
-            aspect-ratio: 1/1;
-            width: 130px; /* Slightly reduced to balance the column */
+            border: 3px solid #16a34a;
+            width: 130px;
             height: 130px;
-            margin-left: 0 !important;
-        }
-
-        .infos div {
-            line-height: 1.8; /* Slightly tighter for better grouping */
-        }
-
-        .input-pill {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #bbf7d0;
             border-radius: 9999px;
-            padding: 4px 12px;
-            width: 100%;
-            outline: none;
-            font-size: 0.8rem;
+            overflow: hidden;
+            flex-shrink: 0;
         }
 
         .label-pill {
-            background: #22c55e;
+            background: #16a34a;
             color: white;
             border-radius: 9999px;
-            padding: 0 10px;
-            font-weight: 600;
-            font-size: 0.65rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 18px;
+            padding: 2px 10px;
+            font-weight: 700;
+            font-size: 10px;
+            display: inline-block;
             line-height: 1;
         }
 
         .gradient-bar {
-            height: 4px;
+            height: 4px; /* Slightly thinner to accommodate more rows */
             border-radius: 9999px;
             margin-top: 1px;
         }
 
-        .bar-green { background: linear-gradient(90deg, #15803d, #4ade80); }
-        .bar-red { background: linear-gradient(90deg, #b91c1c, #f87171); }
+        .bar-green { background: #15803d; }
+        .bar-red { background: #b91c1c; }
 
-        .quote-tag {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 14px;
-            line-height: 1;
-            padding: 0 8px;
+        .output-text {
+            font-weight: 800;
+            color: #1a202c;
+        }
+
+        .quote-box {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid #bbf7d0;
+            padding: 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-style: italic;
+            font-weight: 700;
+            line-height: 1.2;
         }
 
         @media print {
             .no-print { display: none; }
-            body { background: white; }
-            .card-container { box-shadow: none; border: none; width: 400px; height: 500px; }
         }
     </style>
 </head>
-<body class="p-2 md:p-8 min-h-screen flex flex-col items-center justify-center">
+<body class="p-4 md:p-8 min-h-screen flex flex-col items-center justify-center">
 
-    <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
+    <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         <!-- Input Form -->
-        <div class="no-print bg-white p-4 rounded-2xl shadow-xl border border-green-100 h-fit max-h-[90vh] overflow-y-auto">
-            <h2 class="text-lg font-bold text-green-800 mb-4 flex items-center gap-2">
-                <i data-lucide="edit-3" class="w-5 h-5"></i> Profile Setup
+        <div class="no-print bg-white p-6 rounded-2xl shadow-xl border border-green-100 h-fit max-h-[90vh] overflow-y-auto">
+            <h2 class="text-xl font-bold text-green-800 mb-6 flex items-center gap-2">
+                <i data-lucide="settings"></i> Customize Profile
             </h2>
             
-            <div class="space-y-3">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Photo</label>
-                        <input type="file" id="imageInput" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-green-50 file:text-green-700">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Profile Photo</label>
+                        <input type="file" id="imageInput" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
                     </div>
-                    <input type="text" id="in-name" placeholder="Full Name" class="input-pill border-gray-300">
-                    <input type="text" id="in-dob" placeholder="Date of Birth" class="input-pill border-gray-300">
-                    <input type="text" id="in-origin" placeholder="State of Origin" class="input-pill border-gray-300">
-                    <input type="text" id="in-quote" placeholder="Quote" class="input-pill border-gray-300">
-                    <input type="text" id="in-instagram" placeholder="Instagram Handle" class="input-pill border-gray-300">
+                    <input type="text" id="in-name" placeholder="Full Name" class="p-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+                    <input type="text" id="in-dob" placeholder="Date of Birth" class="p-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+                    <input type="text" id="in-origin" placeholder="State of Origin" class="p-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+                    <input type="text" id="in-quote" placeholder="Inspirational Quote" class="p-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+                    <input type="text" id="in-instagram" placeholder="Instagram Handle" class="p-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-green-50">
-                    <input type="text" id="in-lecturer" placeholder="Best Lecturer" class="input-pill">
-                    <input type="text" id="in-bestlevel" placeholder="Best Level" class="input-pill">
-                    <input type="text" id="in-worstlevel" placeholder="Worst Level" class="input-pill">
-                    <input type="text" id="in-bestcourse" placeholder="Best Course" class="input-pill">
-                    <input type="text" id="in-worstcourse" placeholder="Worst Course" class="input-pill">
-                    <input type="text" id="in-ifnot" placeholder="If Not Biochemistry" class="input-pill">
-                    <input type="text" id="in-crush" placeholder="Crush in Class" class="input-pill">
-                    <input type="text" id="in-status" placeholder="Relationship Status" class="input-pill">
-                    <input type="text" id="in-hobbies" placeholder="Hobbies" class="input-pill">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-green-50">
+                    <input type="text" id="in-lecturer" placeholder="Best Lecturer" class="p-2 border rounded-lg">
+                    <input type="text" id="in-bestlevel" placeholder="Best Level" class="p-2 border rounded-lg">
+                    <input type="text" id="in-worstlevel" placeholder="Worst Level" class="p-2 border rounded-lg">
+                    <input type="text" id="in-bestcourse" placeholder="Best Course" class="p-2 border rounded-lg">
+                    <input type="text" id="in-worstcourse" placeholder="Worst Course" class="p-2 border rounded-lg">
+                    <input type="text" id="in-ifnot" placeholder="If Not Biochemistry" class="p-2 border rounded-lg">
+                    <input type="text" id="in-crush" placeholder="Crush in Class" class="p-2 border rounded-lg">
+                    <input type="text" id="in-status" placeholder="Relationship Status" class="p-2 border rounded-lg">
+                    <input type="text" id="in-hobbies" placeholder="Hobbies" class="p-2 border rounded-lg">
                 </div>
 
-                <button onclick="exportAsImage(event)" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 mt-2">
-                    <i data-lucide="download" class="w-4 h-4"></i> Save as PNG Image
+                <button onclick="exportAsImage(event)" class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-3 mt-4 text-lg">
+                    <i data-lucide="camera" class="w-6 h-6"></i> EXPORT HIGH-RES PNG
                 </button>
             </div>
         </div>
 
         <!-- Preview Card -->
-        <div id="capture" class="card-container card-bg rounded-lg shadow-2xl overflow-hidden relative border-[6px] border-white w-full max-w-[400px] aspect-[4/5] mx-auto flex flex-col p-3">
+        <div id="capture" class="card-bg relative flex flex-col p-4 border-[8px] border-white shadow-2xl">
             
             <!-- Header -->
-            <div class="text-center">
-                <h1 class="text-[clamp(0.7rem,4vw,0.9rem)] font-extrabold text-green-900 leading-none">NORTHWEST UNIVERSITY KANO</h1>
-                <p class="text-[clamp(0.45rem,2.5vw,0.6rem)] font-semibold text-gray-700 uppercase mt-0.5">Faculty of Basic Medical Sciences | Biochemistry</p>
+            <div class="text-center mb-2">
+                <h1 class="text-[14px] font-extrabold text-green-900 leading-tight">NORTHWEST UNIVERSITY KANO</h1>
+                <p class="text-[10px] font-semibold text-gray-700 uppercase">Faculty of Basic Medical Sciences</p>
+                <p class="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Department of Biochemistry</p>
             </div>
 
-            <!-- Logo Row -->
-            <div class="flex justify-between items-end mt-1 px-1">
-                <div class="relative flex items-center gap-1">
-                    <div class="absolute -top-3 -left-1 transform -rotate-12">
-                        <i data-lucide="graduation-cap" class="w-5 h-5 text-gray-800 fill-gray-800"></i>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-2xl font-black italic tracking-tighter leading-none text-green-700">FYB</span>
-                        <span class="text-[5px] font-bold tracking-[0.2em] text-red-700 uppercase">OF THE WEEK</span>
-                    </div>
+            <!-- FYB Title Row -->
+            <div class="flex justify-between items-center px-2 mb-2">
+                <div class="flex flex-col">
+                    <span class="text-3xl font-black italic text-green-700 leading-none">FYB</span>
+                    <span class="text-[7px] font-bold text-red-600 tracking-[0.2em]">OF THE WEEK</span>
                 </div>
                 <div class="text-right">
-                    <h2 class="text-[clamp(0.6rem,3.5vw,0.85rem)] font-black text-green-900 uppercase leading-none">THE METABOLITES</h2>
-                    <div class="bg-red-500 text-white text-[5px] font-bold rounded-full inline-flex items-center justify-center px-2 h-[12px] leading-none mt-1 uppercase">FYB OF THE WEEK</div>
+                    <h2 class="text-[14px] font-black text-green-900 leading-none">THE METABOLITES</h2>
+                    <span class="bg-red-500 text-white text-[7px] font-bold px-2 py-0.5 rounded-full inline-block mt-1">FYB OF THE WEEK</span>
                 </div>
             </div>
 
-            <!-- Content Grid -->
-            <!-- FIX: Added gap-2 and removed flex-grow from parent to stabilize height -->
-            <div class="grid grid-cols-5 gap-2 mt-2 overflow-hidden h-full pb-1">
+            <!-- Main Layout -->
+            <div class="flex flex-row gap-4 flex-grow">
                 
-                <!-- Column 1 (Personal) -->
-                <!-- FIX: Changed justify-between to justify-start and added a gap-3 -->
-                <div class="col-span-2 flex flex-col justify-start gap-3 h-full py-1">
-                    <div class="mx-auto profile-circle rounded-full overflow-hidden bg-white shadow-inner flex items-center justify-center flex-shrink-0">
-                        <img id="profile-pic" src="https://via.placeholder.com/150" class="w-full h-full object-cover hidden">
-                        <i id="placeholder-icon" data-lucide="user" class="w-8 h-8 text-green-200"></i>
+                <!-- Left Column -->
+                <div class="w-[140px] flex flex-col gap-2">
+                    <div class="profile-circle bg-white shadow-inner flex items-center justify-center">
+                        <img id="profile-pic" src="" class="w-full h-full object-cover hidden">
+                        <i id="placeholder-icon" data-lucide="user" class="w-12 h-12 text-green-200"></i>
                     </div>
 
-                    <div class="space-y-1.5 infos">
+                    <div class="flex flex-col gap-1">
                         <div>
                             <span class="label-pill">Name:</span>
-                            <div id="out-name" class="border-b border-dotted border-green-400 text-[8px] font-bold text-green-900 uppercase truncate">NI</div>
+                            <div id="out-name" class="output-text text-[11px] border-b border-dotted border-green-400 uppercase truncate mt-1">NI</div>
                         </div>
-                        <div class="text-[7px] font-semibold text-green-800 space-y-0.5">
-                            <p>DOB: <span id="out-dob" class="border-b border-dotted border-green-300">NI</span></p>
-                            <p>Origin: <span id="out-origin" class="border-b border-dotted border-green-300">NI</span></p>
+                        <div class="text-[9px] font-bold text-green-900 leading-tight">
+                            <p>DOB: <span id="out-dob" class="output-text">NI</span></p>
+                            <p>Origin: <span id="out-origin" class="output-text">NI</span></p>
                         </div>
                         <div class="flex items-center gap-1">
-                            <i data-lucide="instagram" class="w-2 h-2 text-green-700"></i>
-                            <span id="out-instagram" class="text-[7px] font-bold text-green-900">NI</span>
+                            <i data-lucide="instagram" class="w-3 h-3 text-green-700"></i>
+                            <span id="out-instagram" class="output-text text-[9px]">NI</span>
                         </div>
-                        <div class="relative pt-2">
-                            <div class="absolute top-0 left-2 bg-gradient-to-r from-red-400 to-green-400 text-white rounded-full text-[5px] font-bold z-10 uppercase quote-tag">Quote</div>
-                            <div id="out-quote" class="bg-white/60 border border-green-100 p-1 rounded-lg text-[7px] italic text-gray-600 leading-tight">NI</div>
-                        </div>
-                        <!-- Watermarks moved here slightly to fill space naturally -->
-                        <div class="flex justify-around items-center pt-1 opacity-10">
-                            <i data-lucide="dna" class="w-4 h-4 text-green-700"></i>
-                            <i data-lucide="flask-conical" class="w-4 h-4 text-green-700"></i>
+                        <div class="quote-box mt-1">
+                            <div class="text-[6px] font-black text-green-700 uppercase mb-1">Quote:</div>
+                            <div id="out-quote" class="italic">NI</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Column 2 (Profile List) -->
-                <div class="col-span-3 flex flex-col justify-between py-1 h-full">
-                    <h3 class="text-green-900 font-black text-[9px] border-b border-green-800 inline-block uppercase mb-1">Profile</h3>
+                <!-- Right Column (Independent Profile Fields) -->
+                <div class="flex-grow flex flex-col">
+                    <h3 class="text-green-900 font-black text-[11px] border-b-2 border-green-800 inline-block uppercase mb-1">Profile Details</h3>
                     
-                    <div class="space-y-1 flex-grow flex flex-col justify-between">
-                        <!-- Items -->
-                        <div class="profile-item">
-                            <div class="text-[6px] font-bold text-green-800 uppercase px-1">Best Lecturer</div>
-                            <div id="out-lecturer" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
+                    <div class="flex flex-col justify-between flex-grow pb-1">
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-bold text-green-800 uppercase">Best Lecturer</span>
+                            <span id="out-lecturer" class="output-text text-[9px]">NI</span>
                             <div class="gradient-bar bar-green"></div>
                         </div>
-                        <div class="profile-item">
-                            <div class="text-[6px] font-bold text-green-800 uppercase px-1">Best Level</div>
-                            <div id="out-bestlevel" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-bold text-green-800 uppercase">Best Level</span>
+                            <span id="out-bestlevel" class="output-text text-[9px]">NI</span>
                             <div class="gradient-bar bar-red"></div>
                         </div>
-                        <div class="profile-item">
-                            <div class="text-[6px] font-bold text-green-800 uppercase px-1">Worst Level</div>
-                            <div id="out-worstlevel" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-bold text-green-800 uppercase">Worst Level</span>
+                            <span id="out-worstlevel" class="output-text text-[9px]">NI</span>
                             <div class="gradient-bar bar-green"></div>
                         </div>
-                        <div class="profile-item">
-                            <div class="text-[6px] font-bold text-green-800 uppercase px-1">Best Course</div>
-                            <div id="out-bestcourse" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-bold text-green-800 uppercase">Best Course</span>
+                            <span id="out-bestcourse" class="output-text text-[9px]">NI</span>
                             <div class="gradient-bar bar-red"></div>
                         </div>
-                        <div class="profile-item">
-                            <div class="text-[6px] font-bold text-green-800 uppercase px-1">Worst Course</div>
-                            <div id="out-worstcourse" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-bold text-green-800 uppercase">Worst Course</span>
+                            <span id="out-worstcourse" class="output-text text-[9px]">NI</span>
                             <div class="gradient-bar bar-green"></div>
                         </div>
-                        <div class="profile-item">
-                            <div class="text-[6px] font-bold text-green-800 uppercase px-1">If Not Biochemistry</div>
-                            <div id="out-ifnot" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-bold text-green-800 uppercase">If Not Biochem</span>
+                            <span id="out-ifnot" class="output-text text-[9px]">NI</span>
                             <div class="gradient-bar bar-red"></div>
                         </div>
-                        <div class="profile-item">
-                            <div class="text-[6px] font-bold text-green-800 uppercase px-1">Crush in Class</div>
-                            <div id="out-crush" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-bold text-green-800 uppercase">Crush in Class</span>
+                            <span id="out-crush" class="output-text text-[9px]">NI</span>
                             <div class="gradient-bar bar-green"></div>
                         </div>
-                        <div class="profile-item">
-                            <div class="text-[6px] font-bold text-green-800 uppercase px-1">Relationship Status</div>
-                            <div id="out-status" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-bold text-green-800 uppercase">Relationship Status</span>
+                            <span id="out-status" class="output-text text-[9px]">NI</span>
                             <div class="gradient-bar bar-red"></div>
                         </div>
-                        <div class="profile-item">
-                            <div class="text-[6px] font-bold text-green-800 uppercase px-1">Hobbies</div>
-                            <div id="out-hobbies" class="px-1 text-[8px] font-medium text-gray-700 truncate leading-none">NI</div>
+                        <div class="flex flex-col">
+                            <span class="text-[7px] font-bold text-green-800 uppercase">Hobbies</span>
+                            <span id="out-hobbies" class="output-text text-[9px]">NI</span>
                             <div class="gradient-bar bar-green"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Watermark -->
-            <div class="absolute bottom-1 right-2 opacity-10 pointer-events-none">
-                <i data-lucide="dna" class="w-8 h-8 text-green-900"></i>
+
+            <!-- Small DNA Watermark -->
+            <div class="absolute bottom-2 right-4 opacity-10">
+                <i data-lucide="dna" class="w-10 h-10 text-green-900"></i>
             </div>
         </div>
     </div>
@@ -256,33 +240,33 @@
             const originalHTML = btn.innerHTML;
             
             try {
-                btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Processing...';
+                btn.innerHTML = '<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> GENERATING HIGH-RES...';
                 if (window.lucide) window.lucide.createIcons();
 
                 const element = document.getElementById('capture');
                 await document.fonts.ready;
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 800));
 
                 const canvas = await html2canvas(element, {
-                    scale: 3,
+                    scale: 5,
                     useCORS: true,
                     logging: false,
                     backgroundColor: "#ffffff",
                     width: 400,
                     height: 500,
-                    letterRendering: true,
-                    allowTaint: true
+                    scrollX: 0,
+                    scrollY: 0
                 });
 
                 const link = document.createElement('a');
                 const nameValue = document.getElementById('in-name')?.value || 'FYB_Profile';
-                link.download = `${nameValue.replace(/\s+/g, '_')}_Card.png`;
+                link.download = `${nameValue.replace(/\s+/g, '_')}_FYB_Card.png`;
                 link.href = canvas.toDataURL('image/png', 1.0);
                 link.click();
                 
             } catch (err) {
                 console.error("Export Error:", err);
-                alert("Image export failed.");
+                alert("Export failed.");
             } finally {
                 btn.innerHTML = originalHTML;
                 if (window.lucide) window.lucide.createIcons();
